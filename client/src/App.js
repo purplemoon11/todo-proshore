@@ -29,13 +29,8 @@ function App() {
       if (isCompleteScreen === null) {
         filter = "all";
       }
-
-      try {
-        const res = await getTodo(filter);
-        setTodoList(res.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+      const res = await getTodo(filter);
+      setTodoList(res.data);
     };
 
     fetchData();
