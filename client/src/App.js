@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { BsCheckLg } from "react-icons/bs";
-import { getTodo, deleteTask, createTodo } from "./services/todo.services";
+import {
+  getTodo,
+  deleteTask,
+  createTodo,
+  updateTodo,
+} from "./services/todo.services";
 import { CgSandClock } from "react-icons/cg";
 
 import "./App.css";
@@ -9,6 +14,8 @@ import "./App.css";
 function App() {
   const [status, setStatus] = useState("");
   const [isCompleteScreen, setIsCompleteScreen] = useState("");
+  const [currentEditedItem, setCurrentEditedItem] = useState("");
+  const [currentEdit, setCurrentEdit] = useState("");
   const [value, setValue] = useState({
     name: "",
     shortDescription: "",
@@ -50,6 +57,35 @@ function App() {
       dateAndTime: "",
       status: "",
     });
+  };
+
+  const handleEdit = (ind, item) => {
+    setCurrentEdit(ind);
+    setCurrentEditedItem(item);
+    setStatus(item.status);
+  };
+
+  const handleUpdateTitle = (value) => {
+    setCurrentEditedItem((prev) => {
+      return { ...prev, name: value };
+    });
+  };
+
+  const handleUpdateDescription = (value) => {
+    setCurrentEditedItem((prev) => {
+      return { ...prev, shortDescription: value };
+    });
+  };
+
+  const handleUpdateDateAndTime = (value) => {};
+
+  const handleUpdateTodo = async (taskId) => {
+    await updateTodo(value, taskId);
+    const updatedTodoList = await getTodo(
+      isCompleteScreen ? "Done" : "Upcoming"
+    );
+
+    setTodoList(updatedTodoList.data);
   };
 
   return (
@@ -135,27 +171,82 @@ function App() {
         </div>
         <div className="todo-list">
           {todoList.result?.map((todo) => {
-            return (
-              <div className="todo-list-item" key={todo.id}>
-                <div>
-                  <h3>{todo.name}</h3>
-                  <h4>{todo.dateAndTime}</h4>
-                  <p>{todo.shortDescription}</p>
-                </div>
-                <div>
-                  <AiOutlineDelete
-                    className="icon"
-                    onClick={() => handleDelete(todo.id)}
+            if (currentEdit === todo.id) {
+              return (
+                <div className="edit_wrapper" key={todo.id}>
+                  <input
+                    placeholder="Updated Title"
+                    onChange={(e) => handleUpdateTitle(e.target.value)}
+                    value={currentEditedItem.name}
                   />
-                  {todo.status === "Done" ? (
-                    <BsCheckLg className="check-icon" />
-                  ) : todo.status === "Upcoming" ? (
-                    <CgSandClock className="check-icon" />
-                  ) : null}
-                  <AiOutlineEdit className="check-icon" />
+                  <textarea
+                    placeholder="Updated Description"
+                    rows={4}
+                    onChange={(e) => handleUpdateDescription(e.target.value)}
+                    value={currentEditedItem.shortDescription}
+                  />
+                  <input
+                    onChange={(e) => handleUpdateDateAndTime(e.target.value)}
+                    value={currentEditedItem.dateAndTime}
+                  />
+                  <div>
+                    <input
+                      type="radio"
+                      id="Upcoming"
+                      name="status"
+                      value={currentEditedItem.status}
+                      checked={status === "Upcoming"}
+                      onChange={handleStatusChange}
+                    />
+                    <label htmlFor="Upcoming">Upcoming</label>
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      id="Done"
+                      name="status"
+                      value={currentEditedItem.status}
+                      checked={status === "Done"}
+                      onChange={handleStatusChange}
+                    />
+                    <label htmlFor="Done">Done</label>
+                  </div>
+                  <button
+                    type="button"
+                    className="primaryBtn"
+                    onClick={() => handleUpdateTodo()}
+                  >
+                    Update
+                  </button>
                 </div>
-              </div>
-            );
+              );
+            } else {
+              return (
+                <div className="todo-list-item" key={todo.id}>
+                  <div>
+                    <h3>{todo.name}</h3>
+                    <h4>{todo.dateAndTime}</h4>
+                    <p>{todo.shortDescription}</p>
+                  </div>
+                  <div>
+                    <AiOutlineDelete
+                      className="icon"
+                      onClick={() => handleDelete(todo.id)}
+                    />
+                    {todo.status === "Done" ? (
+                      <BsCheckLg className="check-icon" title="Status?" />
+                    ) : todo.status === "Upcoming" ? (
+                      <CgSandClock className="check-icon" title="Status?" />
+                    ) : null}
+                    <AiOutlineEdit
+                      className="check-icon"
+                      onClick={() => handleEdit(todo.id, todo)}
+                      title="Edit?"
+                    />
+                  </div>
+                </div>
+              );
+            }
           })}
         </div>
       </div>

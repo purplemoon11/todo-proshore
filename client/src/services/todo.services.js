@@ -4,7 +4,6 @@ export const getTodo = async (filterTask) => {
   const getTodo = await axios.get(
     `http://localhost:5000/api/v1/todo?filterTasks=${filterTask}`
   );
-  console.log(getTodo, filterTask);
   return getTodo;
 };
 
@@ -16,10 +15,17 @@ export const deleteTask = async (taskId) => {
 };
 
 export const createTodo = async (taskData) => {
-  console.log(taskData);
   const createTask = await axios.post(
     `http://localhost:5000/api/v1/createTodo`,
     taskData
   );
   return createTask;
+};
+
+export const updateTodo = async (taskData, taskId) => {
+  const updateTask = await axios.put(
+    `http://localhost:5000/api/v1/tasks/${taskId}`,
+    taskData
+  );
+  return updateTask;
 };
