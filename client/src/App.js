@@ -13,7 +13,7 @@ import "./App.css";
 
 function App() {
   const [status, setStatus] = useState("");
-  const [isCompleteScreen, setIsCompleteScreen] = useState("");
+  const [isCompleteScreen, setIsCompleteScreen] = useState(null);
   const [currentEditedItem, setCurrentEditedItem] = useState("");
   const [currentEdit, setCurrentEdit] = useState("");
   const [value, setValue] = useState({
@@ -24,9 +24,21 @@ function App() {
   });
   const [todoList, setTodoList] = useState([]);
   useEffect(() => {
-    getTodo(isCompleteScreen ? "Done" : "Upcoming").then((res) => {
-      setTodoList(res.data);
-    });
+    const fetchData = async () => {
+      let filter = isCompleteScreen ? "Done" : "Upcoming";
+      if (isCompleteScreen === null) {
+        filter = "all";
+      }
+
+      try {
+        const res = await getTodo(filter);
+        setTodoList(res.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, [isCompleteScreen]);
 
   const handleStatusChange = (event) => {
