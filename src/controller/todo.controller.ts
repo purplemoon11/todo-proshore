@@ -8,6 +8,7 @@ import { todoValidator } from "../validators/todo.validator";
 const todoRepository = AppDataSource.getRepository(Todo);
 
 /**
+ * This function fetch all the data
  *
  * @param req
  * @param res
@@ -44,6 +45,39 @@ export const getTasks = async (
 };
 
 /**
+ * This function fetches single data
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns Promise, with a data from params
+ */
+
+export const getTaskById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const id = +req.params.id;
+    const todo = await todoRepository.findOne({ where: { id: id } });
+
+    if (!todo) {
+      res.status(404).json({ message: "Task not found" });
+      return;
+    }
+
+    res.status(200).json({
+      message: "Task fetched successfully",
+      result: todo,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+/**
+ * This function deletes all the data according to its its
  *
  * @param req
  * @param res
@@ -71,6 +105,7 @@ export const deleteTasks = async (
 };
 
 /**
+ * This function creates or add data to db
  *
  * @param req
  * @param res
@@ -111,6 +146,7 @@ export const createTasks = async (
 };
 
 /**
+ * This function updates data according to given params
  *
  * @param req
  * @param res

@@ -74,6 +74,8 @@ function App() {
 
   const handleUpdateTitle = (value) => {
     setCurrentEditedItem((prev) => {
+      console.log("object", prev);
+      console.log("data", value);
       return { ...prev, name: value };
     });
   };
@@ -84,7 +86,11 @@ function App() {
     });
   };
 
-  const handleUpdateDateAndTime = (value) => {};
+  const handleUpdateDateAndTime = (value) => {
+    setCurrentEditedItem((prev) => {
+      return { ...prev, dateAndTime: value };
+    });
+  };
 
   const handleUpdateTodo = async (taskId) => {
     await updateTodo(value, taskId);
@@ -121,7 +127,6 @@ function App() {
           <div className="todo-input-item">
             <label>Date and Time</label>
             <input
-              type="datetime-local"
               onChange={(e) =>
                 setValue({ ...value, dateAndTime: e.target.value })
               }
@@ -201,7 +206,7 @@ function App() {
                       type="radio"
                       id="Upcoming"
                       name="status"
-                      value={currentEditedItem.status}
+                      value="Upcoming"
                       checked={status === "Upcoming"}
                       onChange={handleStatusChange}
                     />
@@ -212,7 +217,7 @@ function App() {
                       type="radio"
                       id="Done"
                       name="status"
-                      value={currentEditedItem.status}
+                      value="Done"
                       checked={status === "Done"}
                       onChange={handleStatusChange}
                     />
@@ -221,7 +226,7 @@ function App() {
                   <button
                     type="button"
                     className="primaryBtn"
-                    onClick={() => handleUpdateTodo()}
+                    onClick={() => handleUpdateTodo(todo.id)}
                   >
                     Update
                   </button>

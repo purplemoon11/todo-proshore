@@ -23,6 +23,7 @@ export const createTodo = async (taskData) => {
 };
 
 export const updateTodo = async (taskData, taskId) => {
+  console.log(taskData);
   const updateTask = await axios.put(
     `http://localhost:5000/api/v1/tasks/${taskId}`,
     taskData
